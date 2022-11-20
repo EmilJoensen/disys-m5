@@ -1,0 +1,25 @@
+syntax = "proto3";
+package auction;
+
+option go_package = "https://github.com/EmilJoensen/disys-m5;auction";
+
+service Auction {
+    rpc Bid(BidAmount) returns (BidAck) {}
+    rpc Result(ResultVoid) returns (ResultOutcome) {}
+}
+
+message BidAmount {
+    int32 amount = 1; 
+}
+
+message BidAck {
+    string ack = 1;
+}
+
+message ResultOutcome {
+    string status = 1;
+    int32 outcome = 2;
+}
+
+message ResultVoid {}
+
