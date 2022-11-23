@@ -1,3 +1,68 @@
+/*
+┌─────────────────────────────┐
+│                             │
+│  client                     │
+│  ------                     │
+│                             │
+│  Bid:                       │
+│    Bid on auction           │
+│                             │
+│  Result:                    │
+│    Check status of auction  │
+│                             │
+└─────────────────────────────┘
+
+┌────────────────────────────────────────────────┐
+│                                                │
+│  server                                        │
+│  ------                                        │
+│                                                │
+│  handleAuction:                                │
+│    Check if auction is running if not start    │
+│    auction and start taking bids. Else standby │
+│                                                │
+│  standby:                                      │
+│    If auction primary server is running read   │
+│    result and keep track of time, and highest  │
+│    bid. When the primary server stops for any  │
+│    reason try to become primary server by      │
+│    calling handleAuction.                      │
+│                                                │
+│  Bid:                                          │
+│    Check if bid is higher than highestBid. If  │
+│    bid is too low return Ack Failed. If bid    │
+│    is higher than highestBid update it and send│
+│    Ack Succes back.                            │
+│                                                │
+│  Result:                                       │
+│    Send back the status of the auction.        │
+│    Status of the current highest bid and       │
+│    wheter the auction is running or finished.  │
+│                                                │
+│                                                │
+└────────────────────────────────────────────────┘
+
+┌────────────────┐
+│                │                                        ┌────────────────────┐
+│ Client 1       │ Result                                 │                    │
+│ --------       ├────────►┌────────────────────┐  Result │  Standby server    │
+│                │ Status  │                    │ ◄───────┤  --------------    │
+└────────────────┘◄────────┤  Primary server    │         │                    │
+                           │  --------------    │ Status  │  Port: ?           │
+┌────────────────┐ Bid     │                    ├───────► │                    │
+│                ├────────►│  Port: 8000        │         └────────────────────┘
+│ Client 2       │ Ack F/S │                    │   Result
+│ --------       │◄─────── └────────────┬───────┘◄────────────┐
+│                │                      │                     │
+└────────────────┘                      │                 ┌───┴────────────────┐
+                                        │                 │                    │
+                                        │                 │  Standby server    │
+                                        │    Status       │  --------------    │
+                                        └───────────────► │                    │
+                                                          │  Port: ?           │
+                                                          │                    │
+                                                          └────────────────────┘
+ */
 package main
 
 import (
