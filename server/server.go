@@ -99,6 +99,7 @@ func handleAuction(highestBid int32, starttime int64) {
 		id:         8000,
 		auction:    true,
 		highestBid: highestBid,
+        startTime: starttime,
 		bidders:    make(map[int32]int32),
 		ctx:        ctx,
 	}
@@ -129,7 +130,7 @@ func handleAuction(highestBid int32, starttime int64) {
 				defer au.mu.Unlock()
 				au.auction = false
 				log.Printf("Auction is closed!")
-				log.Printf("Winner is...")
+				log.Printf("Winner of auction had bid of %v", au.highestBid)
 				break
 			}
 		}
@@ -177,6 +178,8 @@ func standby (){
 		} else if response.Status == "Auction running" {
 			highestBid = response.Outcome
 		}
+        
+        starttime = response.Starttime
 
 		time.Sleep(time.Duration(100) * time.Millisecond)
 	}
@@ -187,6 +190,7 @@ type AuctionServer struct {
 	id         int32
 	auction    bool            // Indicate whether auction is on or not
 	highestBid int32           // Stores highest overall bid
+    startTime  int64           // Starttime in int64
 	bidders    map[int32]int32 // Stores highest bid for each bidder
 	ctx        context.Context
 	mu         sync.Mutex
@@ -196,7 +200,6 @@ func (au *AuctionServer) Bid(ctx context.Context, in *auction.BidAmount) (*aucti
 
 	if _, ok := au.bidders[in.Id]; !ok {
 		au.bidders[in.Id] = 0
-		log.Printf("Received bid from: %v", in.Id)
 	}
 
 	au.mu.Lock()
@@ -207,11 +210,11 @@ func (au *AuctionServer) Bid(ctx context.Context, in *auction.BidAmount) (*aucti
 
 	if in.Amount < au.highestBid || !au.auction {
 		rep = &auction.BidAck{Ack: "Failed"}
-		log.Printf("Bid %v from %v too low", in.Amount, in.Id)
+		log.Printf("Bid %v too low", in.Amount)
 	} else if in.Amount > au.highestBid {
 		au.highestBid = in.Amount
 		rep = &auction.BidAck{Ack: "Success"}
-		log.Printf("Highest bid is now %v from %v", au.highestBid, in.Id)
+		log.Printf("Highest bid is now %v", au.highestBid)
 	} else {
 		rep = &auction.BidAck{Ack: "Error"}
 	}
@@ -231,6 +234,7 @@ func (au *AuctionServer) Result(ctx context.Context, in *auction.ResultVoid) (*a
 	} else {
 		rep.Status = "Auction finished"
 	}
+    rep.Starttime = au.startTime
 
 	return rep, nil
 }

@@ -20,6 +20,7 @@ message BidAck {
 message ResultOutcome {
     string status = 1;
     int32 outcome = 2;
+    int64 starttime = 3;
 }
 
 message ResultVoid {}

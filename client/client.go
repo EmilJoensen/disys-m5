@@ -99,9 +99,14 @@ func main() {
             continue
 		}
 
-		log.Printf(response.Status)
-
 		if response.Status == "Auction finished" {
+            log.Printf("Auction finished")
+            if int32(response.Outcome) == int32(highestBid) {
+                log.Printf("You won the auction with a bid of %d", highestBid)
+            } else {
+                log.Printf("You lost the auction")
+			    log.Printf("Highest bid is was %v", response.Outcome)
+            }
 			break
 		} else if response.Status == "Auction running" {
 			highestBid = response.Outcome
@@ -109,6 +114,7 @@ func main() {
 		}
 
 		var bid int32 = int32(highestBid) + int32(rand.Intn(10))
+        highestBid = bid
 
 		log.Printf("Bidding %v", bid)
 		bidreq := auction.BidAmount{Amount: bid}
