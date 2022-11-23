@@ -4,7 +4,7 @@
 No installation required other than golang
 
 ## Running the code
-explain...
+The code has two programs. One for the clients and one for the servers.
 
 ### Client
 To start the client from the root of the folder:
@@ -40,7 +40,7 @@ go run server/server.go
 ```
 
 ## Output of running system - The logs
-The code has two programs. One for the clients and one for the servers.
+explain...
 
 # Report
 ## Introduction 
