@@ -181,7 +181,7 @@ func standby (){
         
         starttime = response.Starttime
 
-		time.Sleep(time.Duration(100) * time.Millisecond)
+		time.Sleep(time.Duration(10) * time.Millisecond)
 	}
 }   
 
@@ -203,7 +203,7 @@ func (au *AuctionServer) Bid(ctx context.Context, in *auction.BidAmount) (*aucti
 	}
 
 	au.mu.Lock()
-	defer au.mu.Unlock()
+	
 
 	rep := &auction.BidAck{}
 	au.bidders[in.Id] = in.Amount
@@ -220,6 +220,8 @@ func (au *AuctionServer) Bid(ctx context.Context, in *auction.BidAmount) (*aucti
 	}
 
 	log.Printf("Highest bid is %v", au.highestBid)
+    au.mu.Unlock()
+    time.Sleep(100 * time.Millisecond)
 
 	return rep, nil
 }
