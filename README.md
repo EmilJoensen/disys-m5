@@ -1,13 +1,46 @@
 # disys-m5
 ### By Anders & Emil
 ## Install
-explain...
+No installation required other than golang
 
 ## Running the code
 explain...
 
+### Client
+To start the client from the root of the folder:
+
+```
+go run client/client.go <ID>
+```
+
+For example start two clients: 
+
+```
+go run client/client.go 1
+go run client/client.go 2
+```
+
+### Server
+To start the servers from the root of the folder: 
+
+```
+go run server/server.go
+```
+
+You can start multiple servers. If one server already is running, then new servers will start in a standby mode.
+Standby servers are ready to take over if the primary server crashes. Multiple standby servers can be ready to take over at once.
+Standby servers listen to the primary server to know both the remaining time and the current highest bid. 
+
+To start one primary server with 2 replicas.
+
+```
+go run server/server.go
+go run server/server.go
+go run server/server.go
+```
+
 ## Output of running system - The logs
-explain...
+The code has two programs. One for the clients and one for the servers.
 
 # Report
 ## Introduction 
