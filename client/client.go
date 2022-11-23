@@ -12,7 +12,9 @@ import (
 
 func main() {
 	var conn *grpc.ClientConn
-	conn, err := grpc.Dial(":8000", grpc.WithInsecure())
+    var opts []grpc.DialOption
+    opts = append(opts, grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost:8000", opts...)
 	if err != nil {
 		log.Fatalf("Could not connect: %s", err)
 	}
@@ -26,7 +28,10 @@ func main() {
 
 		response, err := c.Result(context.Background(), &req)
 		if err != nil {
-			log.Fatalf("Error when calling GetTime: %s", err)
+			log.Printf("Error when trying to connect: %s", err)
+			log.Printf("Will retry in 1 second")
+            time.Sleep(1 * time.Second)
+            continue
 		}
 
 		log.Printf(response.Status)

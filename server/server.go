@@ -6,45 +6,59 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	"os"
-	"strconv"
 	"sync"
 	"time"
-
 	"github.com/EmilJoensen/disys-m5/auction"
 	"google.golang.org/grpc"
 )
 
-func main() {
-	arg1, _ := strconv.ParseInt(os.Args[1], 10, 32)
-	ownPort := int32(arg1) + 8000
+type Spinner int
 
+var spinBytes = []byte{'-', '/', '|', '\\'}
+
+func (s *Spinner) Tick() {
+	*s = (*s + 1) % 4
+	fmt.Printf("\b%s", spinBytes[*s:*s+1])
+}
+
+func main() {
+    rand.Seed(time.Now().Unix())
+    handleAuction(0, time.Now().Unix())
+}
+
+func handleAuction(highestBid int32, starttime int64) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	au := &AuctionServer{
-		id:         ownPort,
+		id:         8000,
 		auction:    true,
-		highestBid: 0,
+		highestBid: highestBid,
 		bidders:    make(map[int32]int32),
 		ctx:        ctx,
 	}
 
-	list, err := net.Listen("tcp", fmt.Sprintf(":%v", ownPort))
+	list, err := net.Listen("tcp", fmt.Sprintf(":%v", 8000))
 	if err != nil {
-		log.Fatalf("Failed to listen on port: %v", err)
+		log.Printf("Failed to listen on port: %v", err)
+        log.Printf("It seems the allready is a server running on port 8000")
+        log.Printf("I will go to standby mode")
+        standby()
+        return
 	}
+    log.Println("Primary server")
+    log.Println("If this server is killed, a secondary server will take over")
 	grpcServer := grpc.NewServer()
 	auction.RegisterAuctionServer(grpcServer, au)
 
-	starttime := int(time.Now().Unix())
-	runtime := rand.Intn(100)
+    var runtime int64 = 45
 
-	log.Printf("Auction has started and will run for %v seconds", runtime)
+    elapsed := time.Since(time.Unix(starttime,0))
+
+	log.Printf("Auction has started and will run for %v seconds", runtime - int64(elapsed / time.Second))
 	// Close auction after given time
 	go func() {
 		for {
-			if runtime+starttime == int(time.Now().Unix()) {
+			if runtime+starttime < time.Now().Unix() {
 				au.mu.Lock()
 				defer au.mu.Unlock()
 				au.auction = false
@@ -59,6 +73,48 @@ func main() {
 		log.Fatalf("failed to server %v", err)
 	}
 }
+
+func standby (){
+    log.Println("Secondary backup server")
+    log.Println("If the primary server is killed, this server will take over")
+    log.Println("Waiting until primary server is killed...")
+    var s Spinner
+    var conn *grpc.ClientConn
+    var opts []grpc.DialOption
+    opts = append(opts, grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost:8000", opts...)
+	if err != nil {
+		log.Fatalf("Could not connect: %s", err)
+	}
+	defer conn.Close()
+    var starttime int64 = time.Now().Unix()
+	var highestBid int32
+	c := auction.NewAuctionClient(conn)
+	for {
+
+		req := auction.ResultVoid{}
+
+		response, err := c.Result(context.Background(), &req)
+		if err != nil {
+            fmt.Print("\b")
+            log.Printf("It seems the primary server died")
+            log.Printf("Taking over...")
+            time.Sleep(2 * time.Second)
+            handleAuction(highestBid, starttime)
+            return
+		}
+
+		s.Tick()
+
+		if response.Status == "Auction finished" {
+			break
+		} else if response.Status == "Auction running" {
+			highestBid = response.Outcome
+		}
+
+		time.Sleep(time.Duration(100) * time.Millisecond)
+	}
+}   
 
 type AuctionServer struct {
 	auction.UnimplementedAuctionServer
