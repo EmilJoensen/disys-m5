@@ -122,7 +122,7 @@ $ go run server/server.go
 2022/11/28 10:34:34 Winner of auction had bid of 69
 ```
 
-client 1
+Output of client 1
 
 ```
 $go run client/client.go 
@@ -150,7 +150,7 @@ $go run client/client.go
 2022/11/28 10:34:35 You won the auction with a bid of 69
 ```
 
-client 2
+Output of client 2
 
 ```
 $go run client/client.go 
