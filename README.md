@@ -40,8 +40,138 @@ go run server/server.go
 ```
 
 ## Output of running system - The logs
-explain...
 
+Output of server 1
+
+```
+$ go run server/server.go 
+2022/11/28 10:33:48 Primary server
+2022/11/28 10:33:48 If this server is killed, a secondary server will take over
+2022/11/28 10:33:48 Auction has started and will run for 45 seconds
+2022/11/28 10:33:50 Highest bid is now 1
+2022/11/28 10:33:50 Highest bid is 1
+2022/11/28 10:33:54 Highest bid is now 2
+2022/11/28 10:33:54 Highest bid is 2
+2022/11/28 10:33:57 Highest bid is now 9
+2022/11/28 10:33:57 Highest bid is 9
+signal: interrupt (Crash)
+
+$ go run server/server.go 
+2022/11/28 10:34:04 Failed to listen on port: listen tcp :8000: bind: address already in use
+2022/11/28 10:34:04 It seems the allready is a server running on port 8000
+2022/11/28 10:34:04 I will go to standby mode
+2022/11/28 10:34:04 Secondary backup server
+2022/11/28 10:34:04 If the primary server is killed, this server will take over
+2022/11/28 10:34:04 Waiting until primary server is killed...
+2022/11/28 10:34:18 It seems the primary server died
+2022/11/28 10:34:18 Taking over...
+2022/11/28 10:34:20 Primary server
+2022/11/28 10:34:20 If this server is killed, a secondary server will take over
+2022/11/28 10:34:20 Auction has started and will run for 13 seconds
+2022/11/28 10:34:21 Highest bid is now 40
+2022/11/28 10:34:21 Highest bid is 40
+2022/11/28 10:34:21 Highest bid is now 46
+2022/11/28 10:34:21 Highest bid is 46
+2022/11/28 10:34:21 Highest bid is now 50
+2022/11/28 10:34:21 Highest bid is 50
+2022/11/28 10:34:22 Highest bid is now 52
+2022/11/28 10:34:22 Highest bid is 52
+2022/11/28 10:34:25 Highest bid is now 60
+2022/11/28 10:34:25 Highest bid is 60
+2022/11/28 10:34:29 Highest bid is now 61
+2022/11/28 10:34:29 Highest bid is 61
+2022/11/28 10:34:31 Highest bid is now 69
+2022/11/28 10:34:31 Highest bid is 69
+2022/11/28 10:34:34 Auction is closed!
+2022/11/28 10:34:34 Winner of auction had bid of 69
+```
+
+Output of server 2
+
+```
+$go run server/server.go 
+2022/11/28 10:33:49 Failed to listen on port: listen tcp :8000: bind: address already in use
+2022/11/28 10:33:49 It seems the allready is a server running on port 8000
+2022/11/28 10:33:49 I will go to standby mode
+2022/11/28 10:33:49 Secondary backup server
+2022/11/28 10:33:49 If the primary server is killed, this server will take over
+2022/11/28 10:33:49 Waiting until primary server is killed...
+2022/11/28 10:33:59 It seems the primary server died
+2022/11/28 10:33:59 Taking over...
+2022/11/28 10:34:01 Primary server
+2022/11/28 10:34:01 If this server is killed, a secondary server will take over
+2022/11/28 10:34:01 Auction has started and will run for 32 seconds
+2022/11/28 10:34:01 Highest bid is now 16
+2022/11/28 10:34:01 Highest bid is 16
+2022/11/28 10:34:07 Highest bid is now 17
+2022/11/28 10:34:07 Highest bid is 17
+2022/11/28 10:34:10 Highest bid is now 18
+2022/11/28 10:34:10 Highest bid is 18
+2022/11/28 10:34:15 Highest bid is now 23
+2022/11/28 10:34:15 Highest bid is 23
+2022/11/28 10:34:15 Highest bid is now 29
+2022/11/28 10:34:15 Highest bid is 29
+2022/11/28 10:34:15 Highest bid is now 33
+2022/11/28 10:34:15 Highest bid is 33
+2022/11/28 10:34:16 Highest bid is now 35
+2022/11/28 10:34:16 Highest bid is 35
+signal: interrupt (Crash)
+```
+
+client 1
+
+```
+$go run client/client.go 
+2022/11/28 10:33:54 Highest bid is currently 1
+2022/11/28 10:33:54 Bidding 2
+2022/11/28 10:34:01 Highest bid is currently 9
+2022/11/28 10:34:01 Bidding 16
+2022/11/28 10:34:10 Highest bid is currently 17
+2022/11/28 10:34:10 Bidding 18
+2022/11/28 10:34:19 Error when trying to connect: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp [::1]:8000: connect: connection refused"
+2022/11/28 10:34:19 Will retry in 1 second
+2022/11/28 10:34:20 Error when trying to connect: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp [::1]:8000: connect: connection refused"
+2022/11/28 10:34:20 Will retry in 1 second
+2022/11/28 10:34:21 Highest bid is currently 35
+2022/11/28 10:34:21 Bidding 40
+2022/11/28 10:34:21 Highest bid is currently 40
+2022/11/28 10:34:21 Bidding 46
+2022/11/28 10:34:21 Highest bid is currently 46
+2022/11/28 10:34:21 Bidding 50
+2022/11/28 10:34:22 Highest bid is currently 50
+2022/11/28 10:34:22 Bidding 52
+2022/11/28 10:34:31 Highest bid is currently 61
+2022/11/28 10:34:31 Bidding 69
+2022/11/28 10:34:35 Auction finished
+2022/11/28 10:34:35 You won the auction with a bid of 69
+```
+
+client 2
+
+```
+$go run client/client.go 
+2022/11/28 10:33:50 Highest bid is currently 0
+2022/11/28 10:33:50 Bidding 1
+2022/11/28 10:33:57 Highest bid is currently 2
+2022/11/28 10:33:57 Bidding 9
+2022/11/28 10:34:07 Highest bid is currently 16
+2022/11/28 10:34:07 Bidding 17
+2022/11/28 10:34:15 Highest bid is currently 18
+2022/11/28 10:34:15 Bidding 23
+2022/11/28 10:34:15 Highest bid is currently 23
+2022/11/28 10:34:15 Bidding 29
+2022/11/28 10:34:15 Highest bid is currently 29
+2022/11/28 10:34:15 Bidding 33
+2022/11/28 10:34:16 Highest bid is currently 33
+2022/11/28 10:34:16 Bidding 35
+2022/11/28 10:34:25 Highest bid is currently 52
+2022/11/28 10:34:25 Bidding 60
+2022/11/28 10:34:29 Highest bid is currently 60
+2022/11/28 10:34:29 Bidding 61
+2022/11/28 10:34:34 Auction finished
+2022/11/28 10:34:34 You lost the auction
+2022/11/28 10:34:34 Highest bid is was 69
+```
 # Report
 ## Introduction 
 In this assignment we are creating an auction system. We have three types of nodes. We have clients, primary server and standby servers.
@@ -146,13 +276,13 @@ Argue whether your implementation satisfies linearisability or sequential consis
 Passive (Primary-Backup)
 Replication 
 
-Argue for partial Sequential Consistency. Assmuing only crash tolerance and not byzantine fault tolerance. Say all messages go through, but a server crashes. 100 milisecond delay of ack will enable the Sequential Consistency for clients when using passive replication. We find that Linearizability does not hold as incoming messages may be held cative in the gRPC function serverside, because they are waiting for the lock to be lifted. We are not considering time.
+Argue for partial Sequential Consistency. Assuming only crash tolerance and not byzantine fault tolerance. Say all messages go through, but a server crashes. 100 millisecond delay of ack will enable the Sequential Consistency for clients when using passive replication. We find that linearizability does not hold as incoming messages may be held captive in the gRPC function serverside, because they are waiting for the lock to be lifted. We are not considering time.
 
 ## Correctness 2
 An argument that your protocol is correct in the absence and the presence of failures.
 
-The Passive (Primary-Backup) Replication enables more than one server to crash while the system can still recover. Because the standby servers are getting the same infomation as the clients through the Status gRPC call. We can argue that as long as the standby server has a similarlocal clock the failing primary server it can serve excatly the same infomation. A clock drifted by mutiple seconds will yield an auction which might be a bit longer or shorter. 
+The Passive (Primary-Backup) Replication enables more than one server to crash while the system can still recover. Because the standby servers are getting the same information as the clients through the Status gRPC call. We can argue that as long as the standby server has a similar local clock the failing primary server it can serve exactly the same information. A clock drifted by multiple seconds will yield an auction which might be a bit longer or shorter. 
 
-Because we store all the infomation of the auction in the status and that we do not use the past infomation. We can argue that a new standby server that comes online and gets one status request through to the primary server. Can seconds later stand in for a failing primary server without the client finding out.
+Because we store all the information of the auction in the status and that we do not use the past information. We can argue that a new standby server that comes online and gets one status request through to the primary server. Can seconds later stand in for a failing primary server without the client finding out.
 
-This holds as long as network delay is not longer than 90 miliseconds. As the backup server requests the primary server every 10 micro seconds.  
+This holds as long as network delay is not longer than 90 milliseconds. As the backup server requests the primary server every 10 micro seconds.  
