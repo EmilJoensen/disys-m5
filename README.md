@@ -204,8 +204,7 @@ Because the standby server has both the starttime and the highest bid, it can co
 If you implemented this over the internet, then you would have to rely on a loadbalancer. In this assignment we assume that acquiring the port is the same as acquiring a lock with timeout in a distributed environment. We assume only crash tolerance and not byzantine fault tolerance.
 
 We only need one alive primary server / standby server to complete the auction.
-##
-Architecture
+## Architecture
 A description of the architecture of the system and the protocol (behaviour), including any protocols used internally between nodes of the system.
 
 
