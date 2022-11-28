@@ -54,36 +54,7 @@ $ go run server/server.go
 2022/11/28 10:33:54 Highest bid is 2
 2022/11/28 10:33:57 Highest bid is now 9
 2022/11/28 10:33:57 Highest bid is 9
-signal: interrupt (Crash! will use about 10 seconds to restart)
-
-$ go run server/server.go 
-2022/11/28 10:34:04 Failed to listen on port: listen tcp :8000: bind: address already in use
-2022/11/28 10:34:04 It seems the allready is a server running on port 8000
-2022/11/28 10:34:04 I will go to standby mode
-2022/11/28 10:34:04 Secondary backup server
-2022/11/28 10:34:04 If the primary server is killed, this server will take over
-2022/11/28 10:34:04 Waiting until primary server is killed...
-2022/11/28 10:34:18 It seems the primary server died
-2022/11/28 10:34:18 Taking over...
-2022/11/28 10:34:20 Primary server
-2022/11/28 10:34:20 If this server is killed, a secondary server will take over
-2022/11/28 10:34:20 Auction has started and will run for 13 seconds
-2022/11/28 10:34:21 Highest bid is now 40
-2022/11/28 10:34:21 Highest bid is 40
-2022/11/28 10:34:21 Highest bid is now 46
-2022/11/28 10:34:21 Highest bid is 46
-2022/11/28 10:34:21 Highest bid is now 50
-2022/11/28 10:34:21 Highest bid is 50
-2022/11/28 10:34:22 Highest bid is now 52
-2022/11/28 10:34:22 Highest bid is 52
-2022/11/28 10:34:25 Highest bid is now 60
-2022/11/28 10:34:25 Highest bid is 60
-2022/11/28 10:34:29 Highest bid is now 61
-2022/11/28 10:34:29 Highest bid is 61
-2022/11/28 10:34:31 Highest bid is now 69
-2022/11/28 10:34:31 Highest bid is 69
-2022/11/28 10:34:34 Auction is closed!
-2022/11/28 10:34:34 Winner of auction had bid of 69
+signal: interrupt (Crash)
 ```
 
 Output of server 2
@@ -116,6 +87,39 @@ $go run server/server.go
 2022/11/28 10:34:16 Highest bid is now 35
 2022/11/28 10:34:16 Highest bid is 35
 signal: interrupt (Crash)
+```
+
+server 3
+
+```
+$ go run server/server.go 
+2022/11/28 10:34:04 Failed to listen on port: listen tcp :8000: bind: address already in use
+2022/11/28 10:34:04 It seems the allready is a server running on port 8000
+2022/11/28 10:34:04 I will go to standby mode
+2022/11/28 10:34:04 Secondary backup server
+2022/11/28 10:34:04 If the primary server is killed, this server will take over
+2022/11/28 10:34:04 Waiting until primary server is killed...
+2022/11/28 10:34:18 It seems the primary server died
+2022/11/28 10:34:18 Taking over...
+2022/11/28 10:34:20 Primary server
+2022/11/28 10:34:20 If this server is killed, a secondary server will take over
+2022/11/28 10:34:20 Auction has started and will run for 13 seconds
+2022/11/28 10:34:21 Highest bid is now 40
+2022/11/28 10:34:21 Highest bid is 40
+2022/11/28 10:34:21 Highest bid is now 46
+2022/11/28 10:34:21 Highest bid is 46
+2022/11/28 10:34:21 Highest bid is now 50
+2022/11/28 10:34:21 Highest bid is 50
+2022/11/28 10:34:22 Highest bid is now 52
+2022/11/28 10:34:22 Highest bid is 52
+2022/11/28 10:34:25 Highest bid is now 60
+2022/11/28 10:34:25 Highest bid is 60
+2022/11/28 10:34:29 Highest bid is now 61
+2022/11/28 10:34:29 Highest bid is 61
+2022/11/28 10:34:31 Highest bid is now 69
+2022/11/28 10:34:31 Highest bid is 69
+2022/11/28 10:34:34 Auction is closed!
+2022/11/28 10:34:34 Winner of auction had bid of 69
 ```
 
 client 1
