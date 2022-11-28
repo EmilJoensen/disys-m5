@@ -41,7 +41,7 @@ go run server/server.go
 
 ## Output of running system - The logs
 
-Output of server 1
+Output of server 1 until crash
 
 ```
 $ go run server/server.go 
@@ -89,7 +89,7 @@ $go run server/server.go
 signal: interrupt (Crash)
 ```
 
-server 3
+Output of server 1 after restart
 
 ```
 $ go run server/server.go 
