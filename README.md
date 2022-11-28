@@ -50,13 +50,17 @@ Clients and servers communicate through a gRPC protocol. A client can ask for th
 
 When a client sends a bid request it waits for an ACK response. The ACK response is either success or a failure. If the bid was higher than the highest bit it will be a success. If it was not higher, then it will be a failure.
 
-There is a delay server side for all bids of 100 milliseconds. In these 100 milliseconds the client does not know if the bid went through. After getting a succes the client will still have to ask for the Status of the auction to know if it still holds the highest bid. 
+There is a delay server side for all bids of 100 milliseconds. In these 100 milliseconds the client does not know if the bid went through. After getting a succes the client will still have to ask for the Status of the auction to know if it still holds the highest bid.
 
 The primary server handles the auction. When an auction is started it runs for 45 seconds. It starts with a highest bid of 0. It also stores the Unix timestamp where it started. This is bundled with every request for the status of the auction.
 
 While the auction is running the server is open for connections on port 8000. The server will stay open for Status requests after it is done with the auction. So clients can see the status of the auction. 
 
 Standby servers are multiple server that are ready to take over for the primary server. To be up to date with the primary server, a standby server sends Status request every 10 milliseconds. This means that a standby server will have the highest bid, the starttime of the auction updated more quickly than clients get ACK messages.
+
+This can cause a small bug were a crash results in a client not getting an ACK message, but the bid goes through anyway for the standby server. This edgecase is not causing confusion for the client. As the client can just retry the bid. 
+
+If we also saved the username of the bidding client we could store that along side the highest bid. This would mean that a new bid to the server could be verifyed serverside as a retry which would eliemnate the otherwise shadow bid that the client would have to bid higher. Though for a shadey auction house this is not really a bug and more like a "feature".
 
 If the status request from the standby server results in an error. Say connection refused. Then the Standby server will try to start listening on port 8000 for connections and if this is successful it will become the primary server. if this port is still in use it is assumed that the primary server has recovered or another standby server got there first. The standby server will go back to standby mode if this is the case.
 
@@ -139,5 +143,16 @@ A description of the architecture of the system and the protocol (behaviour), in
 ## Correctness 1
 Argue whether your implementation satisfies linearisability or sequential consistency (after precisely defining  the property it satisfies).
 
+Passive (Primary-Backup)
+Replication 
+
+Argue for partial Sequential Consistency. Assmuing only crash tolerance and not byzantine fault tolerance. Say all messages go through, but a server crashes. 100 milisecond delay of ack will enable the Sequential Consistency for clients when using passive replication. We find that Linearizability does not hold as incoming messages may be held cative in the gRPC function serverside, because they are waiting for the lock to be lifted. We are not considering time.
+
 ## Correctness 2
 An argument that your protocol is correct in the absence and the presence of failures.
+
+The Passive (Primary-Backup) Replication enables more than one server to crash while the system can still recover. Because the standby servers are getting the same infomation as the clients through the Status gRPC call. We can argue that as long as the standby server has a similarlocal clock the failing primary server it can serve excatly the same infomation. A clock drifted by mutiple seconds will yield an auction which might be a bit longer or shorter. 
+
+Because we store all the infomation of the auction in the status and that we do not use the past infomation. We can argue that a new standby server that comes online and gets one status request through to the primary server. Can seconds later stand in for a failing primary server without the client finding out.
+
+This holds as long as network delay is not longer than 90 miliseconds. As the backup server requests the primary server every 10 micro seconds.  
