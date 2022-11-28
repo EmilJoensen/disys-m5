@@ -275,7 +275,9 @@ A description of the architecture of the system and the protocol (behaviour), in
 ```
 
 ## Correctness 1
-Argue whether your implementation satisfies linearisability or sequential consistency (after precisely defining  the property it satisfies).
+Argue whether your implementation satisfies linearisability or sequential consistency (after precisely defining the property it satisfies).
+
+This exercise satisfies sequential consistency. For example, if all messages go through but a server crashes, the 100 millisecond delay of the ACK message will enable this. Linearizability does not hold for this exercise because incoming messages might be held captive serverside.
 
 Passive (Primary-Backup)
 Replication 
@@ -285,8 +287,8 @@ Argue for partial Sequential Consistency. Assuming only crash tolerance and not 
 ## Correctness 2
 An argument that your protocol is correct in the absence and the presence of failures.
 
+Passive replication allows for more than one server to crash and the system as a whole can still recover. Standby servers are getting the same information as the primary server through the status call. As long as the standby server has a similar local clock as the primary server it can take over and serve exactly the same information. If a backup server's clock has drifted, the auction time might vary.
+
+Because we store all the information of the auction in the status and we do not use the past information. We can argue that a new standby server that comes online and receives one status request through to the primary server can seconds later stand in for a failing primary server without the client finding out. This holds as long as network delay is not longer than 90 milliseconds. As the backup server requests the primary server every 10 micro seconds.
+
 The Passive (Primary-Backup) Replication enables more than one server to crash while the system can still recover. Because the standby servers are getting the same information as the clients through the Status gRPC call. We can argue that as long as the standby server has a similar local clock the failing primary server it can serve exactly the same information. A clock drifted by multiple seconds will yield an auction which might be a bit longer or shorter. 
-
-Because we store all the information of the auction in the status and that we do not use the past information. We can argue that a new standby server that comes online and gets one status request through to the primary server. Can seconds later stand in for a failing primary server without the client finding out.
-
-This holds as long as network delay is not longer than 90 milliseconds. As the backup server requests the primary server every 10 micro seconds.  
