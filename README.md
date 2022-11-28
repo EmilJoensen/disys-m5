@@ -54,7 +54,7 @@ $ go run server/server.go
 2022/11/28 10:33:54 Highest bid is 2
 2022/11/28 10:33:57 Highest bid is now 9
 2022/11/28 10:33:57 Highest bid is 9
-signal: interrupt (Crash)
+signal: interrupt (Crash! will use about 10 seconds to restart)
 
 $ go run server/server.go 
 2022/11/28 10:34:04 Failed to listen on port: listen tcp :8000: bind: address already in use
